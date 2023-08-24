@@ -67,6 +67,8 @@ struct GpuMemoryManager
 				freeMem -= low;
 				availableMemory.emplace_back(memData);
 			}
+			else
+				delete memData;
 		} while (low > 0);
 
 		FailIf(availableMemory.size() <= 0, "No available memory\n");
