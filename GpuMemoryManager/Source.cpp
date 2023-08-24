@@ -180,21 +180,11 @@ struct GpuMemoryManager
 			dynamicTensorSize += tensor->size;
 
 		for (auto& memoryPtr : availableMemory)
-		{
 			memoryPtr->ratio = (float)memoryPtr->size / fragSize;
-			printf("Memory size: %zu, ratio: %f\n", memoryPtr->size, memoryPtr->ratio);
-		}
 		for (auto& tensor : staticTensors)
-		{
 			tensor->ratio = (float)tensor->size / fragSize;
-			printf("Static tensor size: %zu, ratio: %f\n", tensor->size, tensor->ratio);
-		}
 		for (auto& tensor : dynamicTensors)
-		{
 			tensor->ratio = (float)tensor->size / dynamicTensorSize;
-			printf("Dynamic tensor size: %zu, ratio: %f\n", tensor->size, tensor->ratio);
-		}
-		printf("\n");
 
 		largestN = 0;
 		float largestRatio = -1;
