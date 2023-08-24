@@ -4,6 +4,8 @@
 
 #include <cuda_runtime.h>
 
+// reminder that GpuMemoryManager is in bytes
+
 void FailIf(bool condition, const char* message)
 {
 	if (condition)
@@ -141,6 +143,9 @@ struct GpuMemoryManager
 					largestN = size / dynamicSize;
 				largestRatio = smallestRatio;
 
+				printf("largestN: %zu\n\n", largestN);
+				printf("left over: %zu\n\n", size - largestN * dynamicSize);
+
 				for (int i = 0; i < staticTensors.size(); ++i)
 					bestCombination[i] = staticTensors[i]->memoryPtr;
 				for (int i = 0; i < dynamicTensors.size(); ++i)
@@ -273,13 +278,13 @@ int main()
 	hdynamicArr1 = new float[dSize1];
 	hdynamicArr2 = new float[dSize2];
 
-	for (int i = 0; i < sSize1; ++i)
+	for (size_t i = 0; i < sSize1; ++i)
 		hstaticArr1[i] = i;
-	for (int i = 0; i < sSize2; ++i)
+	for (size_t i = 0; i < sSize2; ++i)
 		hstaticArr2[i] = i;
-	for (int i = 0; i < dCoef1 * batches; ++i)
+	for (size_t i = 0; i < dSize1; ++i)
 		hdynamicArr1[i] = i;
-	for (int i = 0; i < dCoef2 * batches; ++i)
+	for (size_t i = 0; i < dSize2; ++i)
 		hdynamicArr2[i] = i;
 
 	cudaMemcpy(staticArr1, hstaticArr1, sSize1 * sizeof(float), cudaMemcpyHostToDevice);
@@ -299,13 +304,13 @@ int main()
 	cudaMemcpy(hdynamicArr1, dynamicArr1, dSize1 * sizeof(float), cudaMemcpyDeviceToHost);
 	cudaMemcpy(hdynamicArr2, dynamicArr2, dSize2 * sizeof(float), cudaMemcpyDeviceToHost);
 
-	for (int i = 0; i < sSize1; ++i)
+	for (size_t i = 0; i < sSize1; ++i)
 		FailIf(hstaticArr1[i] != i, "Error in staticArr1\n");
-	for (int i = 0; i < sSize2; ++i)
+	for (size_t i = 0; i < sSize2; ++i)
 		FailIf(hstaticArr2[i] != i, "Error in staticArr2\n");
-	for (int i = 0; i < dSize1; ++i)
+	for (size_t i = 0; i < dSize1; ++i)
 		FailIf(hdynamicArr1[i] != i, "Error in dynamicArr1\n");
-	for (int i = 0; i < dSize2; ++i)
+	for (size_t i = 0; i < dSize2; ++i)
 		FailIf(hdynamicArr2[i] != i, "Error in dynamicArr2\n");
 
 	gpuMemoryManager.PrintGpuMem();
